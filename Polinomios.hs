@@ -1,0 +1,110 @@
+{-# OPTIONS_GHC -fno-warn-tabs #-}
+{-#LANGUAGE GADTs#-}
+
+module Polinomios where
+
+type Monomio = (Int, Int)
+type Polinomio = [Monomio]
+
+-- ======================
+-- POLINOMIOS
+-- ======================
+
+--1)
+agregarMon :: Monomio -> Polinomio -> Polinomio
+agregarMon = \m -> \p -> case (fst m == 0) of {
+    True -> p;
+    False -> case p of {
+        [] -> [m];
+        x:xs -> case (snd m == snd x) of {
+            True -> case  (fst m + fst x == 0) of {
+                True -> xs;
+                False -> (fst m + fst x, snd x) : xs;
+            };
+            False -> case (snd m > snd x) of {
+                True -> m : p;
+                False -> x : (agregarMon m xs);
+            }
+        }
+    }    
+}
+
+
+--2)
+redPol :: Polinomio -> Polinomio
+redPol = \p -> case p of {
+    [] -> [];
+    x:xs -> agregarMon x (redPol xs);
+}
+
+--3)
+sumPol :: Polinomio -> Polinomio -> Polinomio
+sumPol = \p1 -> \p2 -> case p1 of {
+    [] -> p2;
+    x:xs -> case p2 of {
+        [] -> p1;
+        y:ys -> case (snd x == snd y) of {
+            True -> agregarMon (fst x + fst y, snd x) (sumPol xs ys);
+            False -> case (snd x > snd y) of {
+                True -> x : sumPol xs p2;
+                False -> y : sumPol p1 ys;
+            }
+        }
+    }
+}
+
+--4)
+mulPol :: Polinomio -> Polinomio -> Polinomio
+mulPol = \p1 -> \p2 -> case p1 of {
+    [] -> [];
+    x:xs -> case p2 of {
+        [] -> [];
+        y:ys -> sumPol (zip (map(* fst x) (map fst p2)) (map(+ snd x) (map snd p2))) (mulPol xs p2);
+    }
+}
+
+--5)
+derPol :: Polinomio -> Polinomio
+derPol = \p -> case p of {
+    [] -> [];
+    x:xs -> case (snd x == 0) of {
+        True -> [];
+        False -> case (fst x * snd x == 0) of {
+            True -> derPol xs;
+            False -> (fst x * snd x, snd x - 1) : derPol xs;
+        } 
+    }
+}
+
+--6)
+evalPol :: Polinomio -> Int -> Int
+evalPol = \p -> \n -> case (n == 0) of {
+    True -> case (snd (last p) == 0) of {
+        True -> fst (last p);
+        False -> 0; 
+    };
+    False -> case p of {
+        [] -> 0;
+        x:xs -> fst x * (n ^ snd x) + evalPol xs n;
+    }
+}
+
+--7)
+gradoPol::Polinomio -> Int
+gradoPol = \p -> case p of {
+    [] -> 0;
+    x:xs -> snd x;
+}
+																	
+																	
+-- ======================
+-- SHOW
+-- ======================
+
+--8)
+showMon :: Monomio -> String
+showMon = undefined
+
+--9)
+showPol :: Polinomio -> String
+showPol = undefined  
