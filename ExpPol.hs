@@ -31,9 +31,9 @@ cantPol = \t -> case t of {
 --11)
 cantx :: ExPol -> Int
 cantx  = \t -> case t of {
-	Pol p -> length p;
+	Pol p -> length (filter (snd > 0) p);
 	Der d -> cantx d;
-	Eval a n -> 1;
+	Eval a n -> cantx a;
 	Sum y -> sum (map cantx y);
 	Prod x -> sum (map cantx x); 
 }
