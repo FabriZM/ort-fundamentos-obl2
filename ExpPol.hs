@@ -20,11 +20,23 @@ data ExPol where
 																	
 --10) 
 cantPol :: ExPol -> Int
-cantPol = undefined 
+cantPol = \t -> case t of {
+	Pol p -> 1;
+	Der d -> cantPol d;
+	Eval a n -> 1;
+	Sum y -> sum (map cantPol y);
+	Prod x -> sum (map cantPol x); 
+}
 
 --11)
 cantx :: ExPol -> Int
-cantx  = undefined
+cantx  = \t -> case t of {
+	Pol p -> length p;
+	Der d -> cantPol d;
+	Eval a n -> 1;
+	Sum y -> sum (map cantPol y);
+	Prod x -> sum (map cantPol x); 
+}
 
 --12)
 maxProd :: ExPol -> Int
