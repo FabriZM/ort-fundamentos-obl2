@@ -103,8 +103,40 @@ gradoPol = \p -> case p of {
 
 --8)
 showMon :: Monomio -> String
-showMon = undefined
+showMon = \(a,b) -> case b of {
+    0 -> case a of {
+        0 -> "";
+        _ -> show a;
+    };
+    1 -> case a of {
+        0 -> "";
+        1 -> "x";
+        (-1) -> "-x";
+        _ -> show a ++ "x";
+    };
+    _ -> case a of {
+        0 -> "";
+        1 -> "x^" ++ show b;
+        (-1) -> "-x^" ++ show b;
+        _ -> show a ++ "x^" ++ show b;
+    }
+}
 
 --9)
 showPol :: Polinomio -> String
-showPol = undefined  
+showPol = \p -> case p of {
+    [] -> "";
+    x:xs -> case xs of {
+        [] -> showMon x;
+        y:ys -> case (fst x > 0) of {
+            True -> case (fst y > 0) of {
+                True -> showMon x ++ "+" ++ showPol xs;
+                False -> showMon x ++ showPol xs;
+            };
+            False -> case (fst y > 0) of {
+                True -> "-" ++ showMon (((fst x) * (-1)), snd x) ++ "+" ++ showPol xs;
+                False -> "-" ++ showMon (((fst x) * (-1)), snd x) ++ showPol xs;
+            }
+        }
+    }
+} 
